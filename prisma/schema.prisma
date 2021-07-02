@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Well {
+  id             Int              @id @default(autoincrement())
+  JobChannels       JobChannel[]
+  JobMeasurement JobMeasurement[]
+
+  @@map(name: "wells")
+}
+
+model Sensor {
+  id             Int              @id @default(autoincrement())
+  type           SensorType
+  balance        Int
+  sensitivity    Int
+  sampleRate     Int
+  JobChannel        JobChannel[]
+  JobMeasurement JobMeasurement[]
+
+  @@map(name: "sensors")
+}
+
+model Job {
+  id             Int              @id @default(autoincrement())
+  startedAt      DateTime?        @default(now())
+  endedAt        DateTime?
+  name           String
+  customer       String?
+  JobChannel        JobChannel[]
+  JobMeasurement JobMeasurement[]
+
+  @@map(name: "jobs")
+}
+
+model JobChannel {
+  id       Int     @id @default(autoincrement())
+  jobId    Int
+  Job      Job     @relation(fields: [jobId], references: [id])
+  wellId   Int
+  Well     Well    @relation(fields: [wellId], references: [id])
+  sensorId Int
+  Sensor   Sensor  @relation(fields: [sensorId], references: [id])
+  channel  Channel
+
+  @@map(name: "job_well")
+}
+
+model JobMeasurement {
+  jobId     Int
+  Job       Job        @relation(fields: [jobId], references: [id])
+  wellId    Int
+  Well      Well       @relation(fields: [wellId], references: [id])
+  sensorId  Int
+  Sensor    Sensor     @relation(fields: [sensorId], references: [id])
+  createdAt DateTime   @default(now())
+  type      SensorType
+  value     Int
+
+  @@unique([createdAt, jobId, wellId, sensorId])
+
+  @@map(name: "job_measurement")
+}
+
+enum Channel {
+  STRAIN1
+  STRAIN2
+  STRAIN3
+  STRAIN4
+  STRAIN5
+  STRAIN6
+  STRAIN7
+  STRAIN8
+  PIEZO1
+  PIEZO2
+  PIEZO3
+  PIEZO4
+  PIEZO5
+  PIEZO6
+  PIEZO7
+  PIEZO8
+	REMOVED
+}
+
+enum SensorType {
+  STRAIN
+  PIEZO
+}

@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  database:
+    image: timescale/timescaledb:latest-pg12
+    volumes: 
+      - type: volume
+        source: database
+        target: /var/lib/postgresql/data 
+        read_only: false
+    env_file: .env
+    environment: 
+      POSTGRES_HOST: database
+      POSTGRES_DB: thing
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports: 
+      - 0.0.0.0:5432:5432
+    networks:
+      database:
+volumes:
+  database:
+networks:
+  database:

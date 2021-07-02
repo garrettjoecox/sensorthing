@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "jobs" ALTER COLUMN "startedAt" DROP NOT NULL,
+ALTER COLUMN "endedAt" DROP NOT NULL,
+ALTER COLUMN "customer" DROP NOT NULL;

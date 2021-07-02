@@ -1,0 +1,1 @@
+SELECT create_hypertable('job_measurement', 'createdAt');
