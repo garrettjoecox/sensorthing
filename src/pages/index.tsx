@@ -2,19 +2,10 @@ import { SearchIcon } from '@chakra-ui/icons';
 import {
   Button,
   Container,
-  FormControl,
-  FormLabel,
   HStack,
   Input,
   InputGroup,
   InputLeftElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Table,
   Tbody,
   Td,
@@ -22,13 +13,13 @@ import {
   Thead,
   Tr,
   useDisclosure,
-  VStack,
 } from '@chakra-ui/react';
 import { Job } from '@prisma/client';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
 import useSWR from 'swr';
+import { CreateJobForm } from '../client/components/CreateJobForm';
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
   fetch(...args)
@@ -54,46 +45,7 @@ export default function Index() {
         <Button colorScheme="blue" onClick={onOpen}>
           Create Job
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} isCentered size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Create new Job</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <VStack>
-                <FormControl>
-                  <FormLabel>ID</FormLabel>
-                  <Input autoFocus placeholder="ID" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Name</FormLabel>
-                  <Input placeholder="Name" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Customer</FormLabel>
-                  <Input placeholder="Customer" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Starts At</FormLabel>
-                  <Input type="date" placeholder="Starts At" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Ends At</FormLabel>
-                  <Input type="date" placeholder="Ends At" />
-                </FormControl>
-              </VStack>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
-                Create
-              </Button>
-              <Button variant="ghost" onClick={onClose}>
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <CreateJobForm isOpen={isOpen} onClose={onClose} />
       </HStack>
       <Table variant="simple">
         <Thead>

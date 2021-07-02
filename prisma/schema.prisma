@@ -12,6 +12,7 @@ generator client {
 
 model Well {
   id             Int              @id @default(autoincrement())
+	name           String
   JobChannels       JobChannel[]
   JobMeasurement JobMeasurement[]
 
@@ -20,9 +21,10 @@ model Well {
 
 model Sensor {
   id             Int              @id @default(autoincrement())
+	name           String
   type           SensorType
-  balance        Int
-  sensitivity    Int
+  balance        Float
+  sensitivity    Float
   sampleRate     Int
   JobChannel        JobChannel[]
   JobMeasurement JobMeasurement[]
@@ -44,12 +46,12 @@ model Job {
 
 model JobChannel {
   id       Int     @id @default(autoincrement())
-  jobId    Int
-  Job      Job     @relation(fields: [jobId], references: [id])
-  wellId   Int
-  Well     Well    @relation(fields: [wellId], references: [id])
-  sensorId Int
-  Sensor   Sensor  @relation(fields: [sensorId], references: [id])
+  jobId    Int?
+  Job      Job?     @relation(fields: [jobId], references: [id])
+  wellId   Int?
+  Well     Well?    @relation(fields: [wellId], references: [id])
+  sensorId Int?
+  Sensor   Sensor?  @relation(fields: [sensorId], references: [id])
   channel  Channel
 
   @@map(name: "job_well")
