@@ -10,49 +10,72 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Pad {
+  id      Int      @id @default(autoincrement())
+  name    String
+  JobPads JobPad[]
+  Wells   Well[]
+
+  @@map(name: "pads")
+}
+
 model Well {
-  id             Int              @id @default(autoincrement())
-	name           String
-  JobChannels       JobChannel[]
-  JobMeasurement JobMeasurement[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  api             String
+  padId           Int
+  Pad             Pad              @relation(fields: [padId], references: [id])
+  JobChannels     JobChannel[]
+  JobMeasurements JobMeasurement[]
 
   @@map(name: "wells")
 }
 
 model Sensor {
-  id             Int              @id @default(autoincrement())
-	name           String
-  type           SensorType
-  balance        Float
-  sensitivity    Float
-  sampleRate     Int
-  JobChannel        JobChannel[]
-  JobMeasurement JobMeasurement[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  type            SensorType
+  balance         Float
+  sensitivity     Float
+  sampleRate      Int
+  JobChannels     JobChannel[]
+  JobMeasurements JobMeasurement[]
 
   @@map(name: "sensors")
 }
 
 model Job {
-  id             Int              @id @default(autoincrement())
-  startedAt      DateTime?        @default(now())
-  endedAt        DateTime?
-  name           String
-  customer       String?
-  JobChannel        JobChannel[]
-  JobMeasurement JobMeasurement[]
+  id              Int              @id @default(autoincrement())
+  startedAt       DateTime?       
+  endedAt         DateTime?
+  name            String
+  customer        String?
+  JobChannels     JobChannel[]
+  JobMeasurements JobMeasurement[]
+  JobPads         JobPad[]
 
   @@map(name: "jobs")
+}
+
+model JobPad {
+  id    Int @id @default(autoincrement())
+  jobId Int
+  Job   Job @relation(fields: [jobId], references: [id])
+  padId Int
+  Pad   Pad @relation(fields: [padId], references: [id])
+
+  @@map(name: "job_pad")
 }
 
 model JobChannel {
   id       Int     @id @default(autoincrement())
   jobId    Int?
-  Job      Job?     @relation(fields: [jobId], references: [id])
+  Job      Job?    @relation(fields: [jobId], references: [id])
   wellId   Int?
-  Well     Well?    @relation(fields: [wellId], references: [id])
+  Well     Well?   @relation(fields: [wellId], references: [id])
   sensorId Int?
-  Sensor   Sensor?  @relation(fields: [sensorId], references: [id])
-  channel  Channel
+  Sensor   Sensor? @relation(fields: [sensorId], references: [id])
+  channel  Channel @default(UNASSIGNED)
 
   @@map(name: "job_well")
 }
@@ -69,7 +92,6 @@ model JobMeasurement {
   value     Int
 
   @@unique([createdAt, jobId, wellId, sensorId])
-
   @@map(name: "job_measurement")
 }
 
@@ -90,7 +112,7 @@ enum Channel {
   PIEZO6
   PIEZO7
   PIEZO8
-	REMOVED
+  UNASSIGNED
 }
 
 enum SensorType {

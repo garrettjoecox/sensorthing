@@ -14,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const patchHandlerSchema = yup.object().shape({
   query: yup.object().shape({
     id: yup.number().required(),
-    channel: yup.mixed<Channel>().oneOf(Object.values(Channel)).required(),
   }),
   body: yup.object().shape({
     wellId: yup.number().optional(),
     sensorId: yup.number().optional(),
+    channel: yup.mixed<Channel>().oneOf(Object.values(Channel)).required(),
   }),
 });
 
@@ -27,7 +27,7 @@ async function patchHandler(req: NextApiRequest, res: NextApiResponse) {
     patchHandlerSchema.cast({ query: req.query, body: req.body }),
   );
 
-  const existingJobChannel = await prisma.jobChannel.findFirst({ where: { jobId: query.id, channel: query.channel } });
+  const existingJobChannel = await prisma.jobChannel.findFirst({ where: { jobId: query.id, channel: body.channel } });
   let newJobChannel: JobChannel;
 
   const existingJobSensor =
@@ -42,7 +42,7 @@ async function patchHandler(req: NextApiRequest, res: NextApiResponse) {
     newJobChannel = await prisma.jobChannel.create({
       data: {
         jobId: query.id,
-        channel: query.channel,
+        channel: body.channel,
         sensorId: body.sensorId,
         wellId: body.wellId,
       },

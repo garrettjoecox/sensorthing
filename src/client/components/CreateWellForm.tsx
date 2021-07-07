@@ -5,7 +5,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -16,36 +15,42 @@ import {
 import React, { FC, useCallback, useState } from 'react';
 import { mutate } from 'swr';
 
-interface CreateJobFormProps extends Omit<ModalProps, 'children'> {}
+interface CreateWellFormProps extends Omit<ModalProps, 'children'> {
+  onClose: (newWellId?: number) => any;
+  padId: number;
+}
 
-export const CreateJobForm: FC<CreateJobFormProps> = ({ ...props }) => {
+export const CreateWellForm: FC<CreateWellFormProps> = ({ onClose, padId, ...props }) => {
   const [name, setName] = useState('');
-  const [customer, setCustomer] = useState('');
+  const [api, setApi] = useState('');
   const onCreate = useCallback(async () => {
     try {
-      await (
-        await fetch(`/api/jobs`, {
+      const newWell = await (
+        await fetch(`/api/wells`, {
           method: 'POST',
           body: JSON.stringify({
             name,
-            customer,
+            api,
+            padId,
           }),
         })
       ).json();
-      mutate(`/api/jobs`);
 
-      props.onClose();
+      mutate(`/api/wells`);
+      setName('');
+      setApi('');
+
+      onClose(newWell.data.id);
     } catch (error) {
       console.log(error);
     }
-  }, [props]);
+  }, [api, name, onClose, padId]);
 
   return (
-    <Modal closeOnOverlayClick={false} isCentered size="xl" scrollBehavior="inside" {...props}>
+    <Modal closeOnOverlayClick={false} isCentered size="xl" {...props} onClose={() => onClose()}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create new Job</ModalHeader>
-        <ModalCloseButton />
+        <ModalHeader>Create new Well</ModalHeader>
         <ModalBody>
           <VStack>
             <FormControl>
@@ -53,8 +58,8 @@ export const CreateJobForm: FC<CreateJobFormProps> = ({ ...props }) => {
               <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
             </FormControl>
             <FormControl>
-              <FormLabel>Customer</FormLabel>
-              <Input placeholder="Customer" value={customer} onChange={(e) => setCustomer(e.target.value)} />
+              <FormLabel>API</FormLabel>
+              <Input placeholder="API" value={api} onChange={(e) => setApi(e.target.value)} />
             </FormControl>
           </VStack>
         </ModalBody>
@@ -63,7 +68,7 @@ export const CreateJobForm: FC<CreateJobFormProps> = ({ ...props }) => {
           <Button colorScheme="blue" mr={3} onClick={onCreate}>
             Create
           </Button>
-          <Button variant="ghost" onClick={props.onClose}>
+          <Button variant="ghost" onClick={() => onClose()}>
             Cancel
           </Button>
         </ModalFooter>

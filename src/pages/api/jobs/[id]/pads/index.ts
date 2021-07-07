@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as yup from 'yup';
-import prisma from '../../../server/db';
+import prisma from '../../../../../server/db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -13,10 +13,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const postHandlerSchema = yup.object().shape({
-  query: yup.object().shape({}),
+  query: yup.object().shape({
+    id: yup.number().required(),
+  }),
   body: yup.object().shape({
-    name: yup.string().required(),
-    api: yup.string().required(),
     padId: yup.number().required(),
   }),
 });
@@ -24,13 +24,22 @@ const postHandlerSchema = yup.object().shape({
 async function postHandler(req: NextApiRequest, res: NextApiResponse) {
   const { query, body } = postHandlerSchema.validateSync(postHandlerSchema.cast({ query: req.query, body: req.body }));
 
-  const newWell = await prisma.well.create({ data: body });
+  console.log(query, body);
+  const newJobPad = await prisma.jobPad.create({ data: { jobId: query.id, padId: body.padId } });
 
-  return res.json({ data: newWell });
+  return res.json({ data: newJobPad });
 }
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
-  const wells = await prisma.well.findMany();
+const getHandlerSchema = yup.object().shape({
+  query: yup.object().shape({
+    id: yup.number().required(),
+  }),
+});
 
-  return res.json({ data: wells });
+async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+  const { query } = getHandlerSchema.validateSync(getHandlerSchema.cast({ query: req.query }));
+
+  const jobPads = await prisma.jobPad.findMany({ where: { jobId: query.id } });
+
+  return res.json({ data: jobPads });
 }

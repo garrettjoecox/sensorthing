@@ -5,6 +5,8 @@ import prisma from '../../../../server/db';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PATCH') {
     return patchHandler(req, res);
+  } else if (req.method === 'DELETE') {
+    return deleteHandler(req, res);
   } else if (req.method === 'GET') {
     return getHandler(req, res);
   } else {
@@ -46,4 +48,12 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const job = await prisma.job.findUnique({ where: { id: query.id } });
 
   return res.json({ data: job });
+}
+
+async function deleteHandler(req: NextApiRequest, res: NextApiResponse) {
+  const { query } = getHandlerSchema.validateSync(getHandlerSchema.cast({ query: req.query }));
+
+  await prisma.job.delete({ where: { id: query.id } });
+
+  return res.json({ success: true });
 }

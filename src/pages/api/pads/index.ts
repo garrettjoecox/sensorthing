@@ -16,21 +16,19 @@ const postHandlerSchema = yup.object().shape({
   query: yup.object().shape({}),
   body: yup.object().shape({
     name: yup.string().required(),
-    api: yup.string().required(),
-    padId: yup.number().required(),
   }),
 });
 
 async function postHandler(req: NextApiRequest, res: NextApiResponse) {
   const { query, body } = postHandlerSchema.validateSync(postHandlerSchema.cast({ query: req.query, body: req.body }));
 
-  const newWell = await prisma.well.create({ data: body });
+  const newPad = await prisma.pad.create({ data: body });
 
-  return res.json({ data: newWell });
+  return res.json({ data: newPad });
 }
 
 async function getHandler(req: NextApiRequest, res: NextApiResponse) {
-  const wells = await prisma.well.findMany();
+  const pads = await prisma.pad.findMany();
 
-  return res.json({ data: wells });
+  return res.json({ data: pads });
 }

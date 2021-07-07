@@ -15,8 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const postHandlerSchema = yup.object().shape({
   query: yup.object().shape({}),
   body: yup.object().shape({
-    startedAt: yup.date().required(),
-    endedAt: yup.date().required(),
     name: yup.string().required(),
     customer: yup.string().required(),
   }),
