@@ -1,2 +1,2 @@
 -- DropIndex
-DROP INDEX "job_measurement_createdAt_idx";
+-- DROP INDEX "job_measurement_createdAt_idx";

@@ -1,1 +1,1 @@
-SELECT create_hypertable('job_measurement', 'createdAt');
+-- SELECT create_hypertable('job_measurement', 'createdAt');
